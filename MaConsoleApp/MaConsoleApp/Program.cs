@@ -1,9 +1,8 @@
 ﻿using MaConsoleApp;
-using MaConsoleApp.utils;
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 
-// Version : p.113
+// Version : p.124
 
 static class Program
 {
@@ -46,6 +45,22 @@ static class Program
         // Optional Parameters
         Bunny b3 = new (name: "Bby", likesCarrots: true);
         Console.WriteLine($"Bunnies : {b1}\n{b2}\n{b3}");
+
+        var note = new Note("C#") { Pitch = 50 };
+        Console.WriteLine($"{note.GetName()}={note.Description} : {note.Pitch}");
+        // note.Pitch = 10; // Erreur
+        var note2 = new Note("G") { Pitch = 40, Description = "sol"};
+        Console.WriteLine($"{note2.GetName()}={note2.Description} : {note2.Pitch}");
+
+        var phrase = new Phrase("Le hamster passe sa vie à stocker");
+        Console.WriteLine(phrase[1]); // "hamster"
+        phrase[0] = "La";
+        phrase[1] = "fourmi";
+        Console.WriteLine(phrase); // "La fourmi passe sa vie à stocker"
+        phrase[3, '*'] = "son";
+        Console.WriteLine(phrase); // "La fourmi passe son* vie à stocker"
+        Console.WriteLine(phrase[^1]); // "stocker"
+        Console.WriteLine(string.Join(" ", phrase[2..5])); // "passe son* vie"
     }
 }
 
@@ -76,7 +91,7 @@ namespace MaConsoleApp
 
         public Panda(String firstName, String lastName, String title = "M." /* valeur optionnelle */)
         {
-            // "Deconstructuring assignment" pour simplifier légèrement l'écriture du constructeur
+            // "Destructuring assignment" pour simplifier légèrement l'écriture du constructeur
             (this.title, this.fullName) = (title, new FullName
             {
                 firstName = firstName,
@@ -137,5 +152,51 @@ namespace MaConsoleApp
             (11, SPADES_SUITE) => "Jack of spades",
             _ => "Joker"
         };
+    }
+
+    public class Note(string name)
+    {
+        public int Pitch { get; init; } = 20;   // “Init-only” property C#9
+        public int Duration { get; init; } = 100;  // “Init-only” property
+
+        private readonly string name = name;
+        private readonly string _description;
+
+        public string Description { get => _description; init => _description = value; }
+
+
+
+        public string GetName()
+        {
+            return name;
+        }
+    }
+
+
+    public class Phrase(string valeur)
+    {
+
+        // Définition de l'index, ici ça retournera/modifiera un mot de la phrase
+        // On peut mettre plusieurs argument, dont des arguments par défaut
+        public string this[int indexMot, char special = '\0']
+        {
+            get => valeur.Split()[indexMot];
+            set {
+                string[] temp = valeur.Split();
+                temp[indexMot] = value + special;
+                valeur = string.Join(" ", temp);
+            }
+        }
+
+        // Ajout des indices et intervalles
+        // Ex: phrase[^1] retourne le dernier mot
+        public string this[Index index] => valeur.Split()[index];
+        // Ex: phrase[..2] retourne les 2 premiers mots (indice de fin exclusif)
+        public string[] this[Range range] => valeur.Split()[range];
+
+        public override string ToString()
+        {
+            return valeur;
+        }
     }
 }
