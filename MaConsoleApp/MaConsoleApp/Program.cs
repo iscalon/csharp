@@ -1,8 +1,9 @@
 ﻿using MaConsoleApp;
-using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
+using MaConsoleApp.partial; 
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
+using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.124
+// Version : p.136
 
 static class Program
 {
@@ -39,7 +40,7 @@ static class Program
 
         // Object Initializers (besoin que les champs soient 'public' et pas readonly)
         // Note parameterless constructors can omit empty parentheses
-        Bunny b1 = new () { Name = "Bo", LikesCarrots = true, LikesHumans = false }; // Appel constructeur par défaut
+        Bunny b1 = new (){ Name = "Bo", LikesCarrots = true, LikesHumans = false }; // Appel constructeur par défaut
         Bunny b2 = new ("Bo") { LikesCarrots = true, LikesHumans = false }; // Appel constructeur prennant une string en paramètre
         // Versus
         // Optional Parameters
@@ -61,6 +62,9 @@ static class Program
         Console.WriteLine(phrase); // "La fourmi passe son* vie à stocker"
         Console.WriteLine(phrase[^1]); // "stocker"
         Console.WriteLine(string.Join(" ", phrase[2..5])); // "passe son* vie"
+
+        PaymentService paiements = new ();
+        paiements.Payer(7.52m);
     }
 }
 
@@ -177,7 +181,7 @@ namespace MaConsoleApp
     {
 
         // Définition de l'index, ici ça retournera/modifiera un mot de la phrase
-        // On peut mettre plusieurs argument, dont des arguments par défaut
+        // On peut mettre plusieurs arguments, dont des arguments par défaut
         public string this[int indexMot, char special = '\0']
         {
             get => valeur.Split()[indexMot];
@@ -199,4 +203,53 @@ namespace MaConsoleApp
             return valeur;
         }
     }
+}
+
+
+namespace MaConsoleApp.Heritage {
+
+    public class BaseClass {
+        public virtual void Foo() { Console.WriteLine("BaseClass.Foo"); }
+
+        public virtual void ImpossibleARedefinir() {
+            Console.WriteLine("Je peux être redéfinie et je peux être 'hidden'");
+        }
+    }
+
+    public class Overrider : BaseClass {
+        public override void Foo() { Console.WriteLine("Overrider.Foo"); }
+
+        public override sealed void ImpossibleARedefinir() {
+            Console.WriteLine("Je ne peux pas être redéfinie (car je suis 'sealed') mais je peux être 'hidden'");
+        }
+    }
+
+    public class Hider : BaseClass {
+        public new void Foo() { Console.WriteLine("Hider.Foo"); } // 'new' pour dire qu'on masque intentionnellement la méthode Foo de la classe de base
+
+
+    }
+
+    public class Hidoverrider : Overrider {
+        public override void Foo() { Console.WriteLine("Hidoverrider.Foo"); }
+
+        public new void ImpossibleARedefinir() {
+            Console.WriteLine("Je ne suis pas redéfinie (car je suis 'new') et je suis 'hidden'");
+        }
+    }
+
+    //Overrider over = new Overrider();
+    //BaseClass b1 = over;
+    //over.Foo();                         // Overrider.Foo
+    //b1.Foo();                           // Overrider.Foo
+    //Hider h = new Hider();
+    //BaseClass b2 = h;
+    //h.Foo();                           // Hider.Foo
+    //b2.Foo();                          // BaseClass.Foo
+    //Hidoverrider ho = new();
+    //Overrider o2 = ho;
+    //BaseClass base3 = ho;
+    //ho.ImpossibleARedefinir();    // Je ne suis pas redéfinie(car je suis 'new') et je suis 'hidden'
+    //o2.ImpossibleARedefinir();    // Je ne peux pas être redéfinie(car je suis 'sealed') mais je peux être 'hidden'
+    //base3.ImpossibleARedefinir(); // Je ne peux pas être redéfinie(car je suis 'sealed') mais je peux être 'hidden'
 }
