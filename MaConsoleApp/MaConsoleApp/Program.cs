@@ -1,9 +1,10 @@
 ﻿using MaConsoleApp;
+using MaConsoleApp.Heritage;
 using MaConsoleApp.partial; 
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.136
+// Version : p.154
 
 static class Program
 {
@@ -65,6 +66,8 @@ static class Program
 
         PaymentService paiements = new ();
         paiements.Payer(7.52m);
+
+        TestInterface.Test();
     }
 }
 
@@ -208,6 +211,8 @@ namespace MaConsoleApp
 
 namespace MaConsoleApp.Heritage {
 
+    using static IUndoable;
+
     public class BaseClass {
         public virtual void Foo() { Console.WriteLine("BaseClass.Foo"); }
 
@@ -252,4 +257,85 @@ namespace MaConsoleApp.Heritage {
     //ho.ImpossibleARedefinir();    // Je ne suis pas redéfinie(car je suis 'new') et je suis 'hidden'
     //o2.ImpossibleARedefinir();    // Je ne peux pas être redéfinie(car je suis 'sealed') mais je peux être 'hidden'
     //base3.ImpossibleARedefinir(); // Je ne peux pas être redéfinie(car je suis 'sealed') mais je peux être 'hidden'
+
+    public interface IUndoable {
+
+        internal static readonly string UNDO = "Undo";
+        internal static readonly string REDO = "Redo";
+
+        void Undo();
+
+        void Redo() {
+            Console.WriteLine($"Performing : { REDO }");
+        }
+    }
+
+    public class TextBox : IUndoable {
+        public virtual void Undo() => Console.WriteLine($"TextBox.{ UNDO }"); // Il faut mettre 'virtual' sinon c'est 'sealed' par défaut.
+    }
+
+    public class RichTextBox : TextBox {
+        public override void Undo() => Console.WriteLine($"RichTextBox.{ UNDO /* On peut utilise 'UNDO' sans préfixer par le nom de l'interface grâce au 'using static' au début du namespace */}");
+    }
+
+    public interface IUndoable2 { void Undo(); }
+
+    public class TextBox2 : IUndoable2 {
+
+        void IUndoable2.Undo() => Console.WriteLine("TextBox2.Undo"); // On peut préciser explicitement ce qu'on implémente, pas de 'public' => 'private'.
+
+        protected void PMethod() {
+            Console.WriteLine("protected method");
+        }
+    }
+
+    public class RichTextBox2 : TextBox2, IUndoable2 {
+
+        public void Undo() {
+            // base.PMethod(); // OK
+            // base.Undo();    // KO
+            Console.WriteLine("RichTextBox2.Undo");
+        }
+    }
+
+    public class TextBox3 : IUndoable2 {
+        public void Undo() => Console.WriteLine("TextBox3.Undo"); // 'sealed' par défaut.
+    }
+
+    public class RichTextBox3 : TextBox3, IUndoable2 {
+        public void Undo() => Console.WriteLine("RichTextBox3.Undo"); // Masque TextBox3.Undo()
+    }
+
+    public class TestInterface {
+
+        public static void Test() {
+            RichTextBox rrr = new();
+            rrr.Undo();                 // RichTextBox.Undo
+            ((IUndoable)rrr).Undo();    // RichTextBox.Undo
+            ((TextBox)rrr).Undo();      // RichTextBox.Undo
+
+            RichTextBox2 r = new ();
+            r.Undo();                   // RichTextBox2.Undo
+            ((IUndoable2)r).Undo();     // RichTextBox2.Undo
+            //((TextBox2)r).Undo();     // Pas possible car Undo private dans TextBox2
+
+            RichTextBox3 rr = new ();
+            rr.Undo();                  // RichTextBox3.Undo
+            ((IUndoable2)rr).Undo();    // RichTextBox3.Undo
+            ((TextBox3)rr).Undo();      // TextBox3.Undo
+        }
+    }
+
+    // Static virtual/abstract interface members depuis C# 11
+    interface ITypeDescribable {
+        static abstract string Description { get; } // Propriété en lecture seule
+        static virtual string GetCategory() => "";  // Méthode
+    }
+
+    class CustomerTest : ITypeDescribable {
+        public static string Description => "Customer tests";       // Obligatoirement à implémenter (forcément 'sealed' car statique)
+        public static string GetCategory() => "Unit testing";       // Redéfinition optionnelle
+    }
+
+    // ITypeDescribable.GetCategory(); // KO car un membre statique ou abstrait n'est disponible que sur un paramètre de type.
 }
