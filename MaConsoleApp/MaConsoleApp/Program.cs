@@ -1,10 +1,11 @@
 ﻿using MaConsoleApp;
 using MaConsoleApp.Heritage;
-using MaConsoleApp.partial; 
+using MaConsoleApp.partial;
+using MaConsoleApp.utils.enumerations;
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.154
+// Version : p.167
 
 static class Program
 {
@@ -68,6 +69,9 @@ static class Program
         paiements.Payer(7.52m);
 
         TestInterface.Test();
+
+        BorderSidesTest.Ecrire(BorderSides.Left);
+        // BorderSidesTest.Ecrire((BorderSides) 18); // Unhandled exception. System.ArgumentException: On ne sait pas afficher le côté : 18 (Parameter 'side')
     }
 }
 
