@@ -35,4 +35,119 @@
            }
          */
     }
+
+    interface IAnimal {
+
+        string GetName();
+    }
+
+    interface IWasheable<out T> where T: IAnimal {
+
+        void WashMe() {
+            Console.WriteLine("Je suis en train d'être lavé");
+        }
+
+        T Me();
+    }
+
+    class Bear : IAnimal, IWasheable<Bear> {
+
+        public virtual string GetName() {
+            return "Ours";
+        }
+
+        public virtual Bear Me() {
+            return this;
+        }
+    }
+
+    class Grizzly : Bear, IWasheable<Grizzly> {
+
+        public override string GetName() {
+            return "Grizzly";
+        }
+
+        public override Grizzly Me() {
+            return this;
+        }
+    }
+
+    class Camel : IAnimal, IWasheable<Camel> {
+
+        public string GetName() {
+            return "Chameau";
+        }
+
+        public Camel Me() {
+            return this;
+        }
+    }
+
+    class Zoo {
+
+
+        public static void WashNoCovariance(List<IAnimal> animals) {
+            foreach (var animal in animals) {
+                Console.WriteLine($"On lave : { animal.GetName() }");
+            }
+        }
+
+        public static void Wash<T>(List<T> animals) where T : IAnimal {
+            foreach (var animal in animals) {
+                Console.WriteLine($"On lave : { animal.GetName() }");
+            }
+        }
+
+        public static void WashCovariantAvecList(/* List<U> est invariant */ List<IWasheable<IAnimal>> animals) {
+            foreach (var animal in animals) {
+                Console.WriteLine($"On lave : { animal.Me().GetName() }");
+            }
+        }
+
+
+        public static void WashFullCovariant(/* IEnumerable<out U> est covariant */ IEnumerable<IWasheable<IAnimal>> animals) {
+            foreach (var animal in animals) {
+                Console.WriteLine($"On lave : { animal.Me().GetName() }");
+            }
+        }
+
+        public static void ZooTestNoCovariance() {
+            Console.WriteLine("<========= Test méthode sans covariance =========");
+            List<IAnimal> animals = [new Camel(), new Bear(), new Grizzly()];
+            WashNoCovariance(animals);
+
+            List<Bear> bears = [new Bear(), new Bear(), new Grizzly()];
+            // WashNoCovariance(bears); // Erreur de compilation. Car le compilateur empêche de pouvoir ajouter d'autres animaux qui ne sont pas des ours à la liste passée à WashNoCovariance.
+            Console.WriteLine("========= Fin test méthode sans covariance =========>");
+        }
+
+        public static void ZooTest() {
+            Console.WriteLine("<========= Test méthode sans covariance, mais avec contrainte sur <T> =========");
+            List<IAnimal> animals = [new Camel(), new Bear(), new Grizzly()];
+            Wash(animals);
+
+            List<Bear> bears = [new Bear(), new Bear(), new Grizzly()];
+            Wash(bears);
+            Console.WriteLine("========= Fin test méthode sans covariance, mais avec contrainte sur <T> =========>");
+        }
+
+        public static void ZooTestCovariant() {
+            Console.WriteLine("<========= Test méthode avec covariance mais sur une List =========");
+            List<IWasheable<IAnimal>> animals = [new Camel(), new Bear(), new Grizzly()];
+            WashCovariantAvecList(animals);
+            Console.WriteLine("========= Fin test méthode avec covariance mais sur une List =========>");
+
+            Console.WriteLine("<========= Test méthode avec covariance avec un IEnumerable =========");
+            WashFullCovariant(animals);
+
+            List<IWasheable<Bear>> bears = [new Bear(), new Bear(), new Grizzly()];
+            // WashCovariantAvecList(bears); // Ne compile par car List<U> en C# est invariant, pour empêcher d'ajouter des animaux qui ne sont pas des ours à notre liste d'ours,
+            // donc pas de covariance possible. Il faut utiliser plutôt dans la méthode WashXXXX l'interface IEnumerable<out U> qui permet la covariance.
+
+            WashFullCovariant(bears); // Là, avec IEnumerable comme paramètre, ça devient possible.
+            Console.WriteLine("========= Fin test méthode avec covariance avec un IEnumerable =========>");
+        }
+    }
+
+
 }
