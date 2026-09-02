@@ -1,4 +1,5 @@
 ﻿using MaConsoleApp;
+using MaConsoleApp.events;
 using MaConsoleApp.Heritage;
 using MaConsoleApp.partial;
 using MaConsoleApp.utils.delegates;
@@ -81,6 +82,8 @@ static class Program
 
         CalculTest.TestStaticDelegate();
         CalculTest.TestInstanceDelegate();
+
+        StockEventTest.Test();
     }
 }
 
