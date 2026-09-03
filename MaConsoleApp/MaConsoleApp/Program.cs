@@ -1,6 +1,7 @@
 ﻿using MaConsoleApp;
 using MaConsoleApp.events;
 using MaConsoleApp.Heritage;
+using MaConsoleApp.lambda;
 using MaConsoleApp.partial;
 using MaConsoleApp.utils.delegates;
 using MaConsoleApp.utils.enumerations;
@@ -8,7 +9,7 @@ using MaConsoleApp.utils.generiques;
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.176
+// Version : p.203
 
 static class Program
 {
@@ -84,6 +85,8 @@ static class Program
         CalculTest.TestInstanceDelegate();
 
         StockEventTest.Test();
+
+        LambdaTest.Test();
     }
 }
 
