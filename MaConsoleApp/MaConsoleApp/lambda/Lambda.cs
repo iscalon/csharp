@@ -28,12 +28,14 @@ class LambdaTest {
             actions[i] = () => Console.Write(i);
         }
         foreach (Action a in actions) a(); // 333
+        Console.WriteLine();
 
         for (int i = 0; i < 3; i++) {
             int loopScopedi = i; // Créée à chaque itération, donc la closure capture une nouvelle valeur à chaque fois.
             actions[i] = () => Console.Write(loopScopedi);
         }
         foreach (Action a in actions) a(); // 012
+        Console.WriteLine();
     }
 
     static Func<int> Natural() {
