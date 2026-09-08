@@ -9,11 +9,12 @@ using MaConsoleApp.utils.delegates;
 using MaConsoleApp.utils.enumerations;
 using MaConsoleApp.utils.generiques;
 using MaConsoleApp.utils.iterators;
+using MaConsoleApp.utils.records;
 using MaConsoleApp.utils.tuples;
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.227
+// Version : p.238
 
 static class Program
 {
@@ -99,6 +100,8 @@ static class Program
         AnonymousType.Test();
 
         Tuples.Test();
+
+        Record.Test();
     }
 }
 
