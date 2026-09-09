@@ -18,7 +18,7 @@ namespace MaConsoleApp.utils {
             }
         }
 
-        public static void tryWithResources() {
+        public static void TryWithResources() {
             using (StreamReader reader = File.OpenText("file.txt")) {
                 Console.WriteLine("Equivalent Java d'un try-with-resources");
                 Console.WriteLine(reader.ReadToEnd());
