@@ -2,6 +2,7 @@
 using MaConsoleApp.events;
 using MaConsoleApp.Heritage;
 using MaConsoleApp.lambda;
+using MaConsoleApp.operator_overloading;
 using MaConsoleApp.partial;
 using MaConsoleApp.utils;
 using MaConsoleApp.utils.anonymous;
@@ -15,7 +16,7 @@ using MaConsoleApp.utils.tuples;
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.243
+// Version : p.260
 
 static class Program
 {
@@ -105,6 +106,8 @@ static class Program
         Record.Test();
 
         Patterns.Test();
+
+        OperatorsOverloading.Test();
     }
 }
 
