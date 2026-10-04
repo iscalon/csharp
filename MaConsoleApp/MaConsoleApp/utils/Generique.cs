@@ -61,14 +61,10 @@
         }
     }
 
-    class Grizzly : Bear, IWasheable<Grizzly> {
+    class Grizzly : Bear {
 
         public override string GetName() {
             return "Grizzly";
-        }
-
-        public override Grizzly Me() {
-            return this;
         }
     }
 
