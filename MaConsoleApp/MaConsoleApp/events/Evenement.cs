@@ -1,14 +1,16 @@
-﻿namespace MaConsoleApp.events; 
+﻿using System.Globalization;
+
+namespace MaConsoleApp.events; 
 
 
-class PriceChangedEventArgs(decimal? PreviousPrice, decimal NewPrice, string Symbol) : EventArgs {
+class PriceChangedEventArgs(decimal? PreviousPrice, decimal NewPrice, CultureInfo cultureInfo) : EventArgs {
 
     public decimal? PreviousPrice { get; init; } = PreviousPrice;
     public decimal NewPrice { get; init; } = NewPrice;
-    public string Symbol { get; init; } = Symbol;
+    public CultureInfo CultureInfo { get; init; } = cultureInfo;
 }
 
-class Stock(string Symbol) {
+class Stock(CultureInfo cultureInfo) {
 
     decimal? price;
 
@@ -24,7 +26,7 @@ class Stock(string Symbol) {
         if(oldPrice == price) {
             return oldPrice;
         }
-        OnPriceChanged(new PriceChangedEventArgs(oldPrice, price, Symbol));
+        OnPriceChanged(new PriceChangedEventArgs(oldPrice, price, cultureInfo));
         return oldPrice;
     }
 
@@ -36,7 +38,7 @@ class Stock(string Symbol) {
 class StockEventTest {
 
     public static void Test() {
-        Stock stock = new("EUR");
+        Stock stock = new(CultureInfo.GetCultureInfo("fr-FR"));
         stock.ChangePrice(43500);
         stock.PriceChanged += ListenPriceChange;
         stock.ChangePrice(48000);
@@ -44,14 +46,14 @@ class StockEventTest {
 
     private static void ListenPriceChange<T>(T source, PriceChangedEventArgs e) {
         Console.WriteLine($"Price changed by {source}");
-        Console.WriteLine($"New price : {e.NewPrice} {e.Symbol}");
+        Console.WriteLine($"New price : {e.NewPrice.ToString("C", e.CultureInfo)}");
         if (e.PreviousPrice == null) {
             return;
         }
-        Console.WriteLine($"Previous price : {e.PreviousPrice} {e.Symbol}");
+        Console.WriteLine($"Previous price : {e.PreviousPrice?.ToString("C", e.CultureInfo)}");
         if (e.PreviousPrice == decimal.Zero) {
             return;
         }
-        Console.WriteLine($"In/Decrease : {((e.NewPrice - e.PreviousPrice) / (e.PreviousPrice)) * 100:F2} %"); // ":F2" pour afficher seulement 2 décimales.
+        Console.WriteLine($"In/Decrease : {((e.NewPrice - e.PreviousPrice) / (e.PreviousPrice)):P2}"); // ":P2" pour afficher un pourcentage avec 2 décimales.
     }
 }
