@@ -16,7 +16,7 @@ using MaConsoleApp.utils.tuples;
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
 using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.366
+// Version : p.377
 
 static class Program
 {

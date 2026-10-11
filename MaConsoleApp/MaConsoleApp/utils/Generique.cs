@@ -94,7 +94,7 @@
             }
         }
 
-        public static void WashCovariantAvecList(/* List<U> est invariant */ List<IWasheable<IAnimal>> animals) {
+        public static void WashCovariantAvecList(/* List<U> est invariant, mais IList<U> est covariant (IList<U> hérite de IEnumerable<U> qui est covariant) */ List<IWasheable<IAnimal>> animals) {
             foreach (var animal in animals) {
                 Console.WriteLine($"On lave : { animal.Me().GetName() }");
             }
@@ -139,9 +139,71 @@
             List<IWasheable<Bear>> bears = [new Bear(), new Bear(), new Grizzly()];
             // WashCovariantAvecList(bears); // Ne compile par car List<U> en C# est invariant, pour empêcher d'ajouter des animaux qui ne sont pas des ours à notre liste d'ours,
             // donc pas de covariance possible. Il faut utiliser plutôt dans la méthode WashXXXX l'interface IEnumerable<out U> qui permet la covariance.
-
             WashFullCovariant(bears); // Là, avec IEnumerable comme paramètre, ça devient possible.
             Console.WriteLine("========= Fin test méthode avec covariance avec un IEnumerable =========>");
+
+            IEnumerable<IAnimal> animaux = [];
+            IEnumerable<Bear> ours = [];
+            animaux = ours; // OK car "IEnumerable<>" est covariant (IEnumerable<out T>)
+                            // donc on est assuré que dans la liste "animaux" - qui contient maintenant seulement des ours -
+                            // on ne pourra pas ajouter un autre animal qui ne serait pas un ours.
+
+            /*
+             * 
+             * La règle à retenir :
+
+=======================
+out T — covariance (ex : IReadOnlyList<T>)
+	
+
+On peut utiliser un type plus dérivé à la place d'un type plus général.
+	
+
+IReadOnlyList<Chat> peut être utilisé en place de IReadOnlyList<Animal>
+=======================
+
+=======================
+in T — contravariance (ex: Action<in T>)
+	
+
+On peut utiliser un type plus général à la place d'un type plus dérivé.
+	
+
+Action<Animal> peut être utilisé en place de Action<Chat>
+
+Action<Animal> afficherAnimal = animal =>
+{
+    Console.WriteLine($"Animal : {animal.Nom}");
+};
+
+Action<Chat> afficherChat = afficherAnimal; // OK parce que afficherChat sera appelée avec un Chat, et notre méthode afficherAnimal sait parfaitement traiter un Chat, puisqu'un chat est un animal.
+
+
+Regardons maintenant le cas opposé :
+
+Action<Chat> afficherChat = chat =>
+{
+    Console.WriteLine(chat.Nom);
+};
+
+// Erreur de compilation !
+Action<Animal> afficherAnimal = afficherChat;
+
+Interdit parce qu'une Action<Animal> doit pouvoir recevoir n'importe quel animal, y compris un chien.
+Or, afficherChat ne promet de savoir traiter que des chats. Lui transmettre un chien ne serait donc pas sûr.
+=======================
+
+=======================
+Ni in ni out — invariance (ex : List<T>)
+	
+
+Les types génériques doivent correspondre exactement.
+	
+
+List<Chat> ≠ List<Animal>
+=======================
+             */
+
         }
     }
 
