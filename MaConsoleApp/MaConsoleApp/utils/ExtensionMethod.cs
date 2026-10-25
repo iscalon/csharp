@@ -40,6 +40,14 @@ static class ExtensionMethod {
             }
             throw new ArgumentOutOfRangeException(nameof(index));
         }
+
+        public void Print() {
+            Console.Write("[");
+            foreach (T item in sequence) {
+                Console.Write($"{item} ");
+            }
+            Console.WriteLine("]");
+        }
     }
 
     public static void Test() {

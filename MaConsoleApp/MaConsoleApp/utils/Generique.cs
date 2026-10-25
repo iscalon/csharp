@@ -145,8 +145,7 @@
             IEnumerable<IAnimal> animaux = [];
             IEnumerable<Bear> ours = [];
             animaux = ours; // OK car "IEnumerable<>" est covariant (IEnumerable<out T>)
-                            // donc on est assuré que dans la liste "animaux" - qui contient maintenant seulement des ours -
-                            // on ne pourra pas ajouter un autre animal qui ne serait pas un ours.
+                            // et un ours est bien un sous type d'animal.
 
             /*
              * 

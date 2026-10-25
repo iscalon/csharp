@@ -15,9 +15,10 @@ using MaConsoleApp.utils.records;
 using MaConsoleApp.utils.tuples;
 using MaConsoleApp.utils.arrays;
 using DoubleArray = double[]; // On peut même mettre un alias sur les tableaux de double.
-using StringUtil = MaConsoleApp.utils.Util; // On peut mettre un alias à la classe 'Util' importée
+using StringUtil = MaConsoleApp.utils.Util;
+using MaConsoleApp.utils.immmutable.collections; // On peut mettre un alias à la classe 'Util' importée
 
-// Version : p.393
+// Version : p.410
 
 static class Program
 {
@@ -111,6 +112,8 @@ static class Program
         OperatorsOverloading.Test();
 
         Arrays.Test();
+
+        ImmutableCollections.Test();
     }
 }
 
@@ -256,12 +259,14 @@ namespace MaConsoleApp.Heritage {
 
     using static IUndoable;
 
-    public class BaseClass {
+    public abstract class BaseClass {
         public virtual void Foo() { Console.WriteLine("BaseClass.Foo"); }
 
         public virtual void ImpossibleARedefinir() {
             Console.WriteLine("Je peux être redéfinie et je peux être 'hidden'");
         }
+
+        protected abstract void Toto();
     }
 
     public class Overrider : BaseClass {
@@ -270,12 +275,18 @@ namespace MaConsoleApp.Heritage {
         public override sealed void ImpossibleARedefinir() {
             Console.WriteLine("Je ne peux pas être redéfinie (car je suis 'sealed') mais je peux être 'hidden'");
         }
+
+        protected override void Toto() {
+            Console.WriteLine("Overrided Toto");
+        }
     }
 
     public class Hider : BaseClass {
         public new void Foo() { Console.WriteLine("Hider.Foo"); } // 'new' pour dire qu'on masque intentionnellement la méthode Foo de la classe de base
 
-
+        protected override void Toto() {
+            Console.WriteLine("Hidden Toto");
+        }
     }
 
     public class Hidoverrider : Overrider {
